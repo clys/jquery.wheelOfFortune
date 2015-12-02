@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.rotate.min.js"></script>
+
+    <script src="../jquery.wheelOfFortune.js"></script>
+
+    <script>
+        function a() {
+            $("#a").wheelOfFortune('rotate', 2);
+        }
+        $(function () {
+            $("#a").wheelOfFortune({
+                'fortuneImg': 'images/1.png',//转轮图片
+                'pointerImg': 'images/2-1.png',//指针图片
+                'buttonImg': 'images/3.png',//开始按钮图片
+                'fSide': 200,//转轮边长
+                'pSide': 60,//指针边长
+                'bSide': 30,//按钮边长
+                'rotateNum': 9,
+                'items': {
+                    1: [0, 90],
+                    2: [91, 180],
+                    3: [181, 270],
+                    4: [271, 360]
+                },
+                'click': a,//点击按钮的回调
+                'rotateCallback': function () {
+                    alert("啊")
+                },
+                'type': 'p',
+                'pAngle': 90
+            });
+        });
+    </script>
+</head>
+
+<body style="padding: 100px">
+<div id="a" style="position: absolute;">
+</div>
+</body>
+</html>
