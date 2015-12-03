@@ -4,7 +4,8 @@
         elePool = {}, elePoolSB = 0, pluginTagName = "wof-tag",
         configPool = {},
         defaultParam = {
-            rotateNum: 5,
+            fluctuate: 0.8,
+            rotateNum: 12,
             duration: 5000,
             type: 'p',
             pAngle: 0,
@@ -23,19 +24,19 @@
      */
     function build(pointer) {
         var param = configPool[pointer],
-            fortuneImg = param['fortuneImg'],
+            wheelImg = param['wheelImg'],
             pointerImg = param['pointerImg'],
             buttonImg = param['buttonImg'],
-            fSide = param['fSide'],
             pSide = param['pSide'],
+            wSide = param['wSide'],
             bSide = param['bSide'],
-            pOffset = fSide / 2 - pSide / 2,
-            bOffset = fSide / 2 - bSide / 2,
+            pOffset = wSide / 2 - pSide / 2,
+            bOffset = wSide / 2 - bSide / 2,
             html =
-                '<img src="' + fortuneImg + '" style="position:absolute;width:' + fSide + 'px;height:' + fSide + 'px;" f/>' +
+                '<img src="' + wheelImg + '" style="position:absolute;width:' + wSide + 'px;height:' + wSide + 'px;" w/>' +
                 '<img src="' + pointerImg + '" style="position:absolute;width:' + pSide + 'px;height:' + pSide + 'px;top:' + pOffset + 'px;left:' + pOffset + 'px;" p/>' +
                 '<img src="' + buttonImg + '" style="position:absolute;width:' + bSide + 'px;height:' + bSide + 'px;top:' + bOffset + 'px;left:' + bOffset + 'px;cursor:pointer;" b/>';
-        this.css({'width': fSide, 'height': fSide});
+        this.css({'width': wSide, 'height': wSide});
         this.html(html);
         this.find("[b]").on('click', click);
     }
@@ -73,20 +74,23 @@
             config = configPool[pointer],
             item = config['items'][key],
             start = item[0], end = item[1],
-            target = start + ran(end - start),
+            distance = end - start,
+            fluctuate = (1 - config['fluctuate']) * distance / 2,
+            target = start + ran(distance - fluctuate * 2) + fluctuate,
             type = t || config['type'],
             callback = function () {
                 configPool[pointer]['inRotation'] = false;
                 config['rotateCallback'](key);
             };
+
         if (configPool[pointer]['inRotation']) {
             return;
         }
         configPool[pointer]['inRotation'] = true;
 
         switch (type) {
-            case 'f':
-                this.find("[f]").rotate({
+            case 'w':
+                this.find("[w]").rotate({
                     duration: config['duration'],
                     angle: 0 + config['pAngle'],
                     animateTo: 360 - target + config['rotateNum'] * 360 + config['pAngle'],
@@ -112,13 +116,71 @@
     /* public methods ------------------------------------------------------- */
     var methods = {
         init: function (parameter) {
+            var that = this;
             var param = defaultParam;
             $.extend(param, parameter);
             var pointer = elePoolSB++;
             elePool[pointer] = this;
             configPool[pointer] = param;
             this.attr(pluginTagName, pointer);
-            build.apply(this, [pointer]);
+
+
+            var wImg = new Image(), bImg = new Image(), pImg = new Image();
+
+
+            wImg.addEventListener('load', function () {
+                wImgLoading = false;
+                if (typeof configPool[pointer]['wSide'] === "undefined") {
+                    configPool[pointer]['wSide'] = wImg.width;
+                }
+                if (!wImgLoading && !bImgLoading && !pImgLoading) {
+                    build.apply(that, [pointer]);
+                }
+            });
+            bImg.addEventListener('load', function () {
+                bImgLoading = false;
+                if (typeof configPool[pointer]['bSide'] === "undefined") {
+                    configPool[pointer]['bSide'] = bImg.width;
+                }
+                if (!wImgLoading && !bImgLoading && !pImgLoading) {
+                    build.apply(that, [pointer]);
+                }
+            });
+            pImg.addEventListener('load', function () {
+                pImgLoading = false;
+                if (typeof configPool[pointer]['pSide'] === "undefined") {
+                    configPool[pointer]['pSide'] = pImg.width;
+                }
+                if (!wImgLoading && !bImgLoading && !pImgLoading) {
+                    build.apply(that, [pointer]);
+                }
+            });
+
+
+            var wImgLoading, bImgLoading, pImgLoading;
+
+            if (typeof param.wheelImg !== "undefined") {
+                wImgLoading = true;
+                wImg.src = param.wheelImg;
+            } else {
+                wImgLoading = false;
+            }
+
+            if (typeof param.buttonImg !== "undefined") {
+                bImgLoading = true;
+                bImg.src = param.buttonImg;
+            } else {
+                bImgLoading = false;
+            }
+
+            if (typeof param.pointerImg !== "undefined") {
+                pImgLoading = true;
+                pImg.src = param.pointerImg;
+            } else {
+                pImgLoading = false;
+            }
+
+
         },
         rotate: function () {
             rotate.apply(this, arguments);
@@ -136,17 +198,18 @@
     /**
      * <b>初始化</b>
      * $(xxx).wheelOfFortune({
-     * 'fortuneImg':,//转轮图片
+     * 'wheelImg':,//转轮图片
      * 'pointerImg':,//指针图片
      * 'buttonImg':,//开始按钮图片
-     * 'fSide':,//转轮边长
-     * 'pSide':,//指针边长
-     * 'bSide':,//按钮边长
+     * 'wSide':,//转轮边长(默认使用图片宽度)
+     * 'pSide':,//指针边长(默认使用图片宽度)
+     * 'bSide':,//按钮边长(默认使用图片宽度)
      * 'items':,//奖品角度配置{键:[开始角度,结束角度],键:[开始角度,结束角度],......}
-     * 'type':,//旋转指针还是转盘('p'指针 'f'转盘 默认'p')
-     * 'rotateNum':,//转多少圈(默认5)
-     * 'duration':,//转一次的持续时间(默认5000)
      * 'pAngle':,//指针图片中的指针角度(x轴正值为0度，顺时针旋转 默认0)
+     * 'type':,//旋转指针还是转盘('p'指针 'w'转盘 默认'p')
+     * 'fluctuate':,//停止位置距角度配置中点的偏移波动范围(0-1 默认0.8)
+     * 'rotateNum':,//转多少圈(默认12)
+     * 'duration':,//转一次的持续时间(默认5000)
      * 'click':,//点击按钮的回调
      * 'rotateCallback'//转完的回调
      * });
@@ -155,7 +218,7 @@
      * $(xxx).wheelOfFortune('rotate',key,type);
      * 'rotate':调用转方法
      * key:初始化中items的键
-     * type:旋转指针还是转盘('p'指针 'f'转盘) 优先于初始化的type
+     * type:旋转指针还是转盘('p'指针 'w'转盘) 优先于初始化的type
      */
     jQuery.fn.wheelOfFortune = function (method) {
         if (this.size() !== 1) {
