@@ -33,10 +33,10 @@
             pOffset = wSide / 2 - pSide / 2,
             bOffset = wSide / 2 - bSide / 2,
             html =
-                '<img src="' + wheelImg + '" style="position:absolute;width:' + wSide + 'px;height:' + wSide + 'px;" w/>' +
+                '<img src="' + wheelImg + '" style="position:absolute;width:' + wSide + 'px;height:' + wSide + 'px;top:0;left:0;" w/>' +
                 '<img src="' + pointerImg + '" style="position:absolute;width:' + pSide + 'px;height:' + pSide + 'px;top:' + pOffset + 'px;left:' + pOffset + 'px;" p/>' +
                 '<img src="' + buttonImg + '" style="position:absolute;width:' + bSide + 'px;height:' + bSide + 'px;top:' + bOffset + 'px;left:' + bOffset + 'px;cursor:pointer;" b/>';
-        this.css({'width': wSide, 'height': wSide});
+        this.css({'width': wSide, 'height': wSide, 'position': 'absolute'});
         this.html(html);
         this.find("[b]").on('click', click);
     }
@@ -90,8 +90,8 @@
 
         switch (type) {
             case 'w':
-                if(this.find("[w]").size()==0){
-                    build.apply(this,[pointer])
+                if (this.find("[w]").size() == 0) {
+                    build.apply(this, [pointer])
                 }
                 this.find("[w]").rotate({
                     duration: config['duration'],
@@ -101,8 +101,8 @@
                 });
                 break;
             case 'p':
-                if(this.find("[p]").size()==0){
-                    build.apply(this,[pointer])
+                if (this.find("[p]").size() == 0) {
+                    build.apply(this, [pointer])
                 }
                 this.find("[p]").rotate({
                     duration: config['duration'],
@@ -123,8 +123,7 @@
     var methods = {
         init: function (parameter) {
             var that = this;
-            var param = defaultParam;
-            $.extend(param, parameter);
+            var param = $.extend({}, defaultParam, parameter);
             var pointer = elePoolSB++;
             elePool[pointer] = this;
             configPool[pointer] = param;
