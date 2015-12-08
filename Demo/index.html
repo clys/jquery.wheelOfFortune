@@ -8,30 +8,28 @@
     <script src="../jquery.wheelOfFortune.js"></script>
 
     <script>
-        function a() {
-            $("#a").wheelOfFortune('rotate', 2);
-        }
+
         $(function () {
             $("#a").wheelOfFortune({
-                'fortuneImg': 'images/1.png',//转轮图片
-                'pointerImg': 'images/2-1.png',//指针图片
-                'buttonImg': 'images/3.png',//开始按钮图片
-                'fSide': 200,//转轮边长
-                'pSide': 60,//指针边长
-                'bSide': 30,//按钮边长
-                'rotateNum': 9,
-                'items': {
-                    1: [0, 90],
-                    2: [91, 180],
-                    3: [181, 270],
-                    4: [271, 360]
-                },
-                'click': a,//点击按钮的回调
+                'wheelImg':"img/wheel_1/wheel.png",//转轮图片
+                'pointerImg':"img/wheel_1/pointer.png",//指针图片
+                'buttonImg':"img/wheel_1/button.png",//开始按钮图片
+//                'wSide':400,//转轮边长(默认使用图片宽度)
+//                'pSide':191,//指针边长(默认使用图片宽度)
+//                'bSide':87,//按钮边长(默认使用图片宽度)
+                'items':{2:[41,128],3:[129,219],4:[220,310],1:[311,400]},//奖品角度配置{键:[开始角度,结束角度],键:[开始角度,结束角度],......}
+                'pAngle':270,//指针图片中的指针角度(x轴正值为0度，顺时针旋转 默认0)
+                'type':'w',//旋转指针还是转盘('p'指针 'w'转盘 默认'p')
+//                'fluctuate':0.5,//停止位置距角度配置中点的偏移波动范围(0-1 默认0.8)
+//                'rotateNum':12,//转多少圈(默认12)
+//                'duration':6666,//转一次的持续时间(默认5000)
+                'click': function () {
+                    var key = parseInt(Math.random() * 4)+1;
+                    $("#a").wheelOfFortune('rotate',key);
+                },//点击按钮的回调
                 'rotateCallback': function () {
-                    alert("啊")
-                },
-                'type': 'p',
-                'pAngle': 90
+//                    alert("啪");
+                }//转完的回调
             });
         });
     </script>
