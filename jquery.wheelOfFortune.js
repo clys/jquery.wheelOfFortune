@@ -90,6 +90,9 @@
 
         switch (type) {
             case 'w':
+                if(this.find("[w]").size()==0){
+                    build.apply(this,[pointer])
+                }
                 this.find("[w]").rotate({
                     duration: config['duration'],
                     angle: 0 + config['pAngle'],
@@ -98,6 +101,9 @@
                 });
                 break;
             case 'p':
+                if(this.find("[p]").size()==0){
+                    build.apply(this,[pointer])
+                }
                 this.find("[p]").rotate({
                     duration: config['duration'],
                     angle: 0 - config['pAngle'],
@@ -127,8 +133,7 @@
 
             var wImg = new Image(), bImg = new Image(), pImg = new Image();
 
-
-            wImg.addEventListener('load', function () {
+            wImg.onload = function () {
                 wImgLoading = false;
                 if (typeof configPool[pointer]['wSide'] === "undefined") {
                     configPool[pointer]['wSide'] = wImg.width;
@@ -136,8 +141,8 @@
                 if (!wImgLoading && !bImgLoading && !pImgLoading) {
                     build.apply(that, [pointer]);
                 }
-            });
-            bImg.addEventListener('load', function () {
+            };
+            bImg.onload = function () {
                 bImgLoading = false;
                 if (typeof configPool[pointer]['bSide'] === "undefined") {
                     configPool[pointer]['bSide'] = bImg.width;
@@ -145,8 +150,8 @@
                 if (!wImgLoading && !bImgLoading && !pImgLoading) {
                     build.apply(that, [pointer]);
                 }
-            });
-            pImg.addEventListener('load', function () {
+            };
+            pImg.onload = function () {
                 pImgLoading = false;
                 if (typeof configPool[pointer]['pSide'] === "undefined") {
                     configPool[pointer]['pSide'] = pImg.width;
@@ -154,7 +159,7 @@
                 if (!wImgLoading && !bImgLoading && !pImgLoading) {
                     build.apply(that, [pointer]);
                 }
-            });
+            };
 
 
             var wImgLoading, bImgLoading, pImgLoading;
